@@ -1,0 +1,7 @@
+node_modules
+/public/*
+!/public/.keep
+*.log
+*.tmp
+*.zip
+*.tar*
