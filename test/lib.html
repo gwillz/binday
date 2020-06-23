@@ -6,12 +6,13 @@
     <title>Bin day: lib</title>
 </head>
 <body>
+    <div id="binday"></div>
     <script src="http://localhost:3000/lib.js?map=npsp"></script>
     <script>
-        navigator.geolocation.getCurrentPosition(coords => {
+        navigator.geolocation.getCurrentPosition(geo => {
             const element = document.getElementById('binday');
             const week = Binday.getWeek();
-            const day = Binday.getDay(coords);
+            const day = Binday.getDay(geo.coords);
             
             console.log("week", week);
             console.log("day", day);

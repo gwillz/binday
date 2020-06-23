@@ -70,6 +70,10 @@ function main() {
         });
     }));
     
+    if (process.env.NODE_ENV !== "production") {
+        app.use('/test', express.static(r(ROOT, 'test')));
+    }
+    
     // Error handling.
     app.use((error: any, req: Request, res: Response, next: NextFunction) => {
         if (HttpError.isHttpError(error)) {
