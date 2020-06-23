@@ -1,7 +1,11 @@
 node_modules
 /public/*
 !/public/.keep
+/dist/*
+!/dist/.keep
+!/public/test.html
 *.log
 *.tmp
 *.zip
 *.tar*
+*.tsbuildinfo
