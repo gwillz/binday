@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bin day: lib</title>
+</head>
+<body>
+    <script src="http://localhost:3000/lib.js?map=npsp"></script>
+    <script>
+        navigator.geolocation.getCurrentPosition(coords => {
+            const element = document.getElementById('binday');
+            const week = Binday.getWeek();
+            const day = Binday.getDay(coords);
+            
+            console.log("week", week);
+            console.log("day", day);
+            
+            element.innerHTML = `
+                <div>Week: ${week}</div>
+                <div>Day: ${day}</div>
+            `;
+        });
+    </script>
+</body>
+</html>

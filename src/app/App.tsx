@@ -1,7 +1,8 @@
 
 import { Context, createElement } from '@bikeshaving/crank';
 import { FeatureCollection } from 'geojson';
-import { MapConfig, getBinWeek, getBinDay, getGeo } from './utils';
+import { MapConfig, getBinWeek, getBinDay } from '../common/utils';
+import { getGeo } from './dom';
 
 
 export function* App(props: MapConfig) {

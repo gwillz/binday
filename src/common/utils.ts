@@ -40,11 +40,6 @@ export function getBinDay(map: FeatureCollection, coords: LatLng): string | unde
 }
 
 
-export async function sleep(timeout: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, timeout));
-}
-
-
 export function isMapConfig(test: any): test is MapConfig {
     return test &&
         typeof test.target === "string" &&
@@ -63,28 +58,4 @@ export function isPolygonType(test?: Geometry | null): test is Polygon | MultiPo
         test.type === "Polygon" ||
         test.type === "MultiPolygon"
     );
-}
-
-
-export function ready(cb: () => void) {
-    if (document.readyState === "complete") {
-        cb();
-    }
-    else {
-        window.addEventListener('load', inner);
-        document.addEventListener('DOMContentLoaded', inner);
-    }
-
-    function inner() {
-        window.removeEventListener('load', inner);
-        document.removeEventListener('DOMContentLoaded', inner);
-        cb();
-    }
-}
-
-
-export async function getGeo(options?: PositionOptions) {
-    return new Promise<Coordinates>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(geo => resolve(geo.coords), reject, options);
-    });
 }

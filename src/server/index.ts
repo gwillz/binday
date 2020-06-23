@@ -4,6 +4,8 @@ import fs from 'fs';
 import util from 'util';
 import express, { Response, Request, NextFunction } from 'express';
 import morgan from 'morgan';
+import { HttpError } from './HttpError';
+import { isMapConfig, getBinDay, getBinWeek } from '../common/utils';
 
 
 const readFileAsync = util.promisify(fs.readFile);
@@ -14,25 +16,6 @@ const PORT = +process.env.PORT! || 3000;
 const ROOT = r('..');
 
 
-class HttpError extends Error {
-    status: number;
-
-    constructor(status: number, message: string) {
-        super(message);
-        this.name = "HttpError";
-        this.status = status;
-    }
-
-    static isHttpError(test: any): test is HttpError {
-        return !!test && test.status && test.status < 500;
-    }
-
-    static assertHttpError(test: any): asserts test is HttpError {
-        if (!HttpError.isHttpError(test)) throw test;
-    }
-}
-
-
 function main() {
     const app = express();
 
@@ -40,34 +23,53 @@ function main() {
     app.use(morgan('combined'));
 
     // Serve widget code + inject config.
-    app.get('/binday.js', a(async (req, res) => {
-        const { target, map } = req.query;
-
-        if (!target) throw new HttpError(400, "Missing 'target' parameter.");
-        if (!map) throw new HttpError(400, "Missing 'map' parameter.");
-
-        let config: any;
-        try {
-            config = JSON.parse(await readFileAsync(r(ROOT, 'maps', map + '.json'), 'utf-8'));
-        }
-        catch (error) {
-            throw new HttpError(400, `Invalid or missing map file for '${map}'`);
-        }
-
-        config.target = target;
-
+    app.get('/widget.js', a(async (req, res) => {
+        assert(req.query.target, 400, "Missing 'target' parameter.");
+        assert(req.query.map, 400, "Missing 'map' parameter.");
+        
+        const config = await loadConfig(req.query.map as string);
+        config.target = req.query.target as string;
+        
         let payload = "";
         payload += ';window.__config=' + JSON.stringify(config) + ';';
-        payload += await readFileAsync(r(ROOT, 'public/index.js'), 'utf-8');
+        payload += await readFileAsync(r(ROOT, 'public/widget.js'), 'utf-8');
 
         res.header('content-type', 'application/javascript;charset=utf-8');
         res.send(payload);
     }));
+    
+    
+    app.get('/lib.js', a(async (req, res) => {
+        assert(req.query.map, 400, "Missing 'map' parameter.");
+        const config = await loadConfig(req.query.map as string);
+        
+        let payload = "";
+        payload += ';window.__config=' + JSON.stringify(config) + ';';
+        payload += await readFileAsync(r(ROOT, 'public/lib.js'), 'utf-8');
 
-    // Serve static files, which is what? test.html?
-    // TODO Make this conditional for debug/release.
-    app.use(express.static(r(ROOT, 'public')));
-
+        res.header('content-type', 'application/javascript;charset=utf-8');
+        res.send(payload);
+    }));
+    
+    
+    app.get('/api', a(async (req, res) => {
+        assert(req.query.map, 400, "Missing 'map' parameter.");
+        assert(req.query.lat, 400, "Missing 'lat' parameter.");
+        assert(req.query.lng, 400, "Missing 'lng' parameter.");
+        
+        const config = await loadConfig(req.query.map as string);
+        
+        const coords = {
+            latitude: +req.query.lat,
+            longitude: +req.query.lng,
+        }
+        
+        res.send({
+            bin_day: getBinDay(config.map, coords),
+            bin_week: getBinWeek(config.bin_pattern),
+        });
+    }));
+    
     // Error handling.
     app.use((error: any, req: Request, res: Response, next: NextFunction) => {
         if (HttpError.isHttpError(error)) {
@@ -85,9 +87,28 @@ function main() {
     // Start.
     app.listen(PORT, () => {
         console.log('Listening on:', PORT);
-        console.log('Public is:', r(ROOT, 'public'))
     });
 }
+
+
+function assert<T>(test: T, status = 400, message = "Assertion error"): asserts test is NonNullable<T> {
+    if (!test) throw new HttpError(status, message);
+}
+
+
+async function loadConfig(name: string) {
+    try {
+        const file = await readFileAsync(r(ROOT, 'maps', name + '.json'), 'utf-8');
+        const config = JSON.parse(file);
+        config.target = "";
+        
+        if (isMapConfig(config)) return config;
+    }
+    catch (error) {}
+    
+    throw new HttpError(400, `Invalid or missing map file for '${name}'`);
+}
+
 
 /**
  * Handle async functions properly.

@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig",
   "include": [
-    "src/server"
+    "src/server",
+    "src/common",
   ],
   "compilerOptions": {
     "target": "es2015",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */
@@ -10,6 +11,6 @@
     "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     "sourceMap": true,                     /* Generates corresponding '.map' file. */
     "outDir": "./dist",                        /* Redirect output structure to the directory. */
-    "rootDir": "./src/server",
+    "rootDir": "./src",
   }
 }

@@ -3,7 +3,6 @@ node_modules
 !/public/.keep
 /dist/*
 !/dist/.keep
-!/public/test.html
 *.log
 *.tmp
 *.zip
