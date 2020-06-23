@@ -30,7 +30,7 @@ export function getBinDay(map: FeatureCollection, coords: LatLng): string | unde
     if (isFeatureCollection(map)) {
         const polygon = map.features.find(feature => (
             isPolygonType(feature.geometry) &&
-            pointsWithinPolygon(position, feature.geometry)
+            pointsWithinPolygon(position, feature.geometry).features.length > 0
         ));
 
         return polygon?.properties?.weekday as string;
