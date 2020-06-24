@@ -4,6 +4,7 @@ import fs from 'fs';
 import util from 'util';
 import express, { Response, Request, NextFunction } from 'express';
 import morgan from 'morgan';
+import compression from 'compression';
 import { renderer } from '@bikeshaving/crank/cjs/html';
 import { createElement } from '@bikeshaving/crank/cjs';
 import MarkdownIt from 'markdown-it';
@@ -34,7 +35,9 @@ function main() {
 
     // Logging.
     app.use(morgan('combined'));
-
+    
+    app.use(compression());
+    
     // Serve widget code + inject config.
     app.get('/js/widget.js', a(async (req, res) => {
         assert(req.query.target, 400, "Missing 'target' parameter.");
