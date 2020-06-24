@@ -1,7 +1,7 @@
 
 import { renderer } from '@bikeshaving/crank/dom';
 import { createElement } from '@bikeshaving/crank';
-import { isMapConfig } from '../common/utils';
+import { isMapConfig } from '../common/bins';
 import { ready } from './dom';
 import { App } from './App';
 

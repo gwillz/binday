@@ -1,6 +1,6 @@
 
 import { Context, createElement } from '@bikeshaving/crank';
-import { MapConfig, getBinWeek, getBinDay } from '../common/utils';
+import { MapConfig, getBinWeek, getBinDay } from '../common/bins';
 import { Widget } from '../common/Widget';
 import { getGeo } from './dom';
 

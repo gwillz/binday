@@ -1,5 +1,5 @@
 
-import { getBinDay, getBinWeek, isMapConfig, LatLng } from '../common/utils';
+import { getBinDay, getBinWeek, isMapConfig, LatLng } from '../common/bins';
 
 
 declare global {
