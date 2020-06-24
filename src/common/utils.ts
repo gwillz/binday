@@ -7,6 +7,7 @@ import pointsWithinPolygon from '@turf/points-within-polygon';
 
 export interface MapConfig {
     target: string;
+    edit_link?: string;
     bin_pattern: string[];
     map: FeatureCollection;
 }

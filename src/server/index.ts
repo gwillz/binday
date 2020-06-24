@@ -14,14 +14,18 @@ import { Widget } from '../common/Widget';
 
 
 const readFileAsync = util.promisify(fs.readFile);
+const readdirAsync = util.promisify(fs.readdir);
 const r = path.resolve.bind(null, __dirname);
 
 
 const PORT = +process.env.PORT! || 3000;
 const ROOT = r('..');
 
+const GEOJSON_IO_URL = "https://geojson.io";
+
 const CONTENT_TYPE_HTML = 'text/html;charset=utf-8';
 const CONTENT_TYPE_JS = 'application/javascript;charset=utf-8';
+const CONTENT_TYPE_GEOJSON = 'application/geo+json';
 
 
 function main() {
@@ -38,6 +42,7 @@ function main() {
         
         const config = await loadConfig(req.query.map as string);
         config.target = req.query.target as string;
+        config.edit_link = getEditLink(req, req.query.map as string);
         
         let payload = "";
         payload += ';window.__config=' + JSON.stringify(config) + ';';
@@ -51,6 +56,7 @@ function main() {
     app.get('/js/lib.js', a(async (req, res) => {
         assert(req.query.map, 400, "Missing 'map' parameter.");
         const config = await loadConfig(req.query.map as string);
+        config.edit_link = getEditLink(req, req.query.map as string);
         
         let payload = "";
         payload += ';window.__config=' + JSON.stringify(config) + ';';
@@ -61,12 +67,13 @@ function main() {
     }));
     
     
-    app.get('/api', a(async (req, res) => {
+    app.get('/api/', a(async (req, res) => {
         assert(req.query.map, 400, "Missing 'map' parameter.");
         assert(req.query.lat, 400, "Missing 'lat' parameter.");
         assert(req.query.lng, 400, "Missing 'lng' parameter.");
         
         const config = await loadConfig(req.query.map as string);
+        config.edit_link = getEditLink(req, req.query.map as string);
         
         const coords = {
             latitude: +req.query.lat,
@@ -76,6 +83,7 @@ function main() {
         res.send({
             bin_day: getBinDay(config.map, coords),
             bin_week: getBinWeek(config.bin_pattern),
+            edit_link: config.edit_link,
         });
     }));
     
@@ -86,6 +94,7 @@ function main() {
         
         
         const config = await loadConfig(req.query.map as string);
+        config.edit_link = getEditLink(req, req.query.map as string);
         
         const coords = {
             latitude: +req.query.lat,
@@ -98,10 +107,36 @@ function main() {
         const body = await renderer.render(createElement(Widget, {
             bin_day,
             bin_week,
+            // TODO edit_link
         }));
         
         res.header('content-type', CONTENT_TYPE_HTML);
         res.send(body);
+    }));
+    
+    app.get('/configs', a(async (req, res) => {
+        const files = await readdirAsync(r(ROOT, 'maps'));
+        const maps: any[] = [];
+        
+        for (let file of files) {
+            const match = /^(.+)\.json$/.exec(file);
+            if (!match) continue;
+            
+            const [_, name] = match;
+            const link = getEditLink(req, name);
+            maps.push({ name, link });
+        }
+        
+        res.send({ maps });
+    }));
+    
+    app.get('/geo', a(async (req, res) => {
+        assert(req.query.map, 400, "Missing 'map' parameter.");
+        
+        const config = await loadConfig(req.query.map as string);
+        
+        res.header('content-type', CONTENT_TYPE_GEOJSON);
+        res.send(config.map);
     }));
     
     app.use('/examples', express.static(r(ROOT, 'examples')));
@@ -157,6 +192,13 @@ async function loadConfig(name: string) {
     catch (error) {}
     
     throw new HttpError(400, `Invalid or missing map file for '${name}'`);
+}
+
+
+function getEditLink(req: Request, name: string) {
+    return GEOJSON_IO_URL +
+        "/#data=data:text/x-url," +
+        encodeURIComponent(`${req.protocol}://${req.hostname}/geo?map=${name}`);
 }
 
 
