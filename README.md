@@ -42,7 +42,7 @@ This renders a widget into your page which then prompts for your GPS location.
 
 Example: [Library](https://my-bin-day.herokuapp.com/examples/lib.html)
 
-Endpoint: `/js/lib.js?map=..."
+Endpoint: `/js/lib.js?map=...`
 
 - `map` the config name
 
@@ -70,7 +70,7 @@ This returns a JS-free HTML copy of the widget.
 
 Example: [API](https://my-bin-day.herokuapp.com/examples/api.html)
 
-Endpoint: `/api?map=...&lat=...&lng=...`
+Endpoint: `/api/bins?map=...&lat=...&lng=...`
 
 - `map` the config name
 - `lat` your latitude
@@ -84,6 +84,13 @@ This returns a JSON body of your bin collection data.
     "bin_week": "green"
 }
 ```
+
+#### Additional API endpoints
+
+- `/api/maps`
+    To list all configs provided and a link view their map on [geojson.io](//geojson.io).
+- `/api/geojson?map=...`
+    Returns the geojson component.
 
 
 ## Creating new maps
