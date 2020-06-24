@@ -9,7 +9,7 @@
     <div id="binday">Loading...</div>
     <script>
         navigator.geolocation.getCurrentPosition(geo => {
-            fetch(`http://localhost:3000/api?map=npsp&lat=${geo.coords.latitude}&lng=${geo.coords.longitude}`)
+            fetch(`/api?map=npsp&lat=${geo.coords.latitude}&lng=${geo.coords.longitude}`)
             .then(res => res.json())
             .then(data => {
                 const element = document.getElementById('binday');
