@@ -70,9 +70,8 @@ function main() {
         });
     }));
     
-    if (process.env.NODE_ENV !== "production") {
-        app.use('/test', express.static(r(ROOT, 'test')));
-    }
+    app.use('/examples', express.static(r(ROOT, 'examples')));
+    // app.get('/', (req, res) => res.sendFile(r(ROOT, 'README.md')));
     
     // Error handling.
     app.use((error: any, req: Request, res: Response, next: NextFunction) => {
