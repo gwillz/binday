@@ -5,6 +5,7 @@ import util from 'util';
 import express, { Response, Request, NextFunction } from 'express';
 import morgan from 'morgan';
 import compression from 'compression';
+import cors from 'cors';
 import { renderer } from '@bikeshaving/crank/cjs/html';
 import { createElement } from '@bikeshaving/crank/cjs';
 import MarkdownIt from 'markdown-it';
@@ -37,6 +38,8 @@ function main() {
     app.use(morgan('combined'));
     
     app.use(compression());
+    
+    app.use(cors());
     
     // Serve widget code + inject config.
     app.get('/js/widget.js', a(async (req, res) => {
