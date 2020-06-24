@@ -6,9 +6,10 @@
     <title>Bin day: lib</title>
 </head>
 <body>
+<div id="example">
     <div id="binday">Loading...</div>
     <script src="/js/lib.js?map=npsp"></script>
-    <script>
+    <script async defer>
         navigator.geolocation.getCurrentPosition(geo => {
             const element = document.getElementById('binday');
             const week = Binday.getWeek();
@@ -23,5 +24,11 @@
             `;
         });
     </script>
+</div>
+<pre id="preview"></pre>
+<script>
+    window.$ = document.querySelector.bind(document);
+    $("#preview").innerText = $("#example").innerHTML;
+</script>
 </body>
 </html>
