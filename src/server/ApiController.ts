@@ -1,9 +1,9 @@
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { HttpError } from './HttpError';
-import { a, loadConfig, assert, readdirAsync, r, getEditLink } from './utils';
+import { a, loadConfig, assert, readdirAsync, r } from './utils';
 import { CONTENT_TYPE_GEOJSON } from '../common/config';
-import { getBinWeek, getBinDay } from '../common/bins';
+import { getBinWeek, getBinDay, getEditLink } from '../common/bins';
 
 
 export function ApiController() {
@@ -15,7 +15,7 @@ export function ApiController() {
         assert(req.query.lng, 400, "Missing 'lng' parameter.");
         
         const config = await loadConfig(req.query.map as string);
-        config.edit_link = getEditLink(req, req.query.map as string);
+        config.edit_link = getEditLink(req.hostname, req.query.map as string);
         
         const coords = {
             latitude: +req.query.lat,
@@ -38,7 +38,7 @@ export function ApiController() {
             if (!match) continue;
             
             const [_, name] = match;
-            const link = getEditLink(req, name);
+            const link = getEditLink(req.hostname, name);
             maps.push({ name, link });
         }
         

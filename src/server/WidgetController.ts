@@ -2,9 +2,9 @@
 import { Router } from 'express';
 import { createElement } from '@bikeshaving/crank/cjs';
 import { renderer } from '@bikeshaving/crank/cjs/html';
-import { a, assert, loadConfig, getEditLink } from './utils';
+import { a, assert, loadConfig } from './utils';
 import { CONTENT_TYPE_HTML } from '../common/config';
-import { getBinDay, getBinWeek } from '../common/bins';
+import { getBinDay, getBinWeek, getEditLink } from '../common/bins';
 import { Widget } from '../common/Widget';
 
 
@@ -18,7 +18,7 @@ export function WidgetController() {
         
         
         const config = await loadConfig(req.query.map as string);
-        config.edit_link = getEditLink(req, req.query.map as string);
+        config.edit_link = getEditLink(req.hostname, req.query.map as string);
         
         const coords = {
             latitude: +req.query.lat,

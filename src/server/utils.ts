@@ -4,7 +4,6 @@ import util from 'util';
 import path from 'path';
 import { Request, Response, NextFunction } from 'express';
 import { HttpError } from './HttpError';
-import { GEOJSON_IO_URL } from '../common/config';
 import { isMapConfig } from '../common/bins';
 
 
@@ -40,18 +39,6 @@ export async function loadConfig(name: string) {
     catch (error) {}
     
     throw new HttpError(400, `Invalid or missing map file for '${name}'`);
-}
-
-
-/**
- * 
- * @param req 
- * @param name 
- */
-export function getEditLink(req: Request, name: string) {
-    return GEOJSON_IO_URL +
-        "/#data=data:text/x-url," +
-        encodeURIComponent(`${req.protocol}://${req.hostname}/geo?map=${name}`);
 }
 
 

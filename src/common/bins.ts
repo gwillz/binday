@@ -3,6 +3,7 @@ import { GeoJsonObject, FeatureCollection, MultiPolygon, Polygon, Geometry } fro
 import { getWeek } from 'date-fns';
 import { point } from '@turf/helpers';
 import pointsWithinPolygon from '@turf/points-within-polygon';
+import { GEOJSON_IO_URL } from './config';
 
 
 export interface MapConfig {
@@ -38,6 +39,18 @@ export function getBinDay(map: FeatureCollection, coords: LatLng): string | unde
     }
 
     return undefined;
+}
+
+
+/**
+ * 
+ * @param req 
+ * @param name 
+ */
+export function getEditLink(hostname: string, name: string) {
+    return GEOJSON_IO_URL +
+        "/#data=data:text/x-url," +
+        encodeURIComponent(`https://${hostname}/geo?map=${name}`);
 }
 
 

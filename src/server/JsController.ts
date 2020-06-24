@@ -1,7 +1,8 @@
 
 import { Router } from 'express';
 import { CONTENT_TYPE_JS } from '../common/config';
-import { assert, loadConfig, getEditLink, readFileAsync, r, a } from './utils';
+import { getEditLink } from '../common/bins';
+import { assert, loadConfig, readFileAsync, r, a } from './utils';
 
 export function JsController() {
     const router = Router();
@@ -13,7 +14,7 @@ export function JsController() {
         
         const config = await loadConfig(req.query.map as string);
         config.target = req.query.target as string;
-        config.edit_link = getEditLink(req, req.query.map as string);
+        config.edit_link = getEditLink(req.hostname, req.query.map as string);
         
         let payload = "";
         payload += ';window.__config=' + JSON.stringify(config) + ';';
@@ -27,7 +28,7 @@ export function JsController() {
     router.get('/lib.js', a(async (req, res) => {
         assert(req.query.map, 400, "Missing 'map' parameter.");
         const config = await loadConfig(req.query.map as string);
-        config.edit_link = getEditLink(req, req.query.map as string);
+        config.edit_link = getEditLink(req.hostname, req.query.map as string);
         
         let payload = "";
         payload += ';window.__config=' + JSON.stringify(config) + ';';
