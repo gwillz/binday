@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bin day: static widget</title>
+</head>
+<body>
+    <div id="binday">Loading...</div>
+    <script>
+        navigator.geolocation.getCurrentPosition(geo => {
+            fetch(`http://localhost:3000/widget?map=npsp&lat=${geo.coords.latitude}&lng=${geo.coords.longitude}`)
+            .then(res => res.text())
+            .then(data => {
+                const element = document.getElementById('binday');
+                element.innerHTML = data;
+            })
+        });
+    </script>
+</body>
+</html>

@@ -4,8 +4,12 @@ import fs from 'fs';
 import util from 'util';
 import express, { Response, Request, NextFunction } from 'express';
 import morgan from 'morgan';
+import { renderer } from '@bikeshaving/crank/cjs/html';
+import { createElement } from '@bikeshaving/crank/cjs';
+
 import { HttpError } from './HttpError';
 import { isMapConfig, getBinDay, getBinWeek } from '../common/utils';
+import { Widget } from '../common/Widget';
 
 
 const readFileAsync = util.promisify(fs.readFile);
@@ -68,6 +72,31 @@ function main() {
             bin_day: getBinDay(config.map, coords),
             bin_week: getBinWeek(config.bin_pattern),
         });
+    }));
+    
+    app.get('/widget', a(async (req, res) => {
+        assert(req.query.map, 400, "Missing 'map' parameter.");
+        assert(req.query.lat, 400, "Missing 'lat' parameter.");
+        assert(req.query.lng, 400, "Missing 'lng' parameter.");
+        
+        
+        const config = await loadConfig(req.query.map as string);
+        
+        const coords = {
+            latitude: +req.query.lat,
+            longitude: +req.query.lng,
+        }
+        
+        const bin_day = getBinDay(config.map, coords) ?? "unavailable";
+        const bin_week = getBinWeek(config.bin_pattern);
+        
+        const body = await renderer.render(createElement(Widget, {
+            bin_day,
+            bin_week,
+        }));
+        
+        res.header('content-type', 'text/html;charset=utf-8');
+        res.send(body);
     }));
     
     app.use('/examples', express.static(r(ROOT, 'examples')));
