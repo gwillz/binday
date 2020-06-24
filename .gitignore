@@ -1,8 +1,6 @@
 node_modules
 /public/*
-!/public/.keep
 /dist/*
-!/dist/.keep
 *.log
 *.tmp
 *.zip
