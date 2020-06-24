@@ -27,7 +27,7 @@ function main() {
     app.use(morgan('combined'));
 
     // Serve widget code + inject config.
-    app.get('/widget.js', a(async (req, res) => {
+    app.get('/js/widget.js', a(async (req, res) => {
         assert(req.query.target, 400, "Missing 'target' parameter.");
         assert(req.query.map, 400, "Missing 'map' parameter.");
         
@@ -43,7 +43,7 @@ function main() {
     }));
     
     
-    app.get('/lib.js', a(async (req, res) => {
+    app.get('/js/lib.js', a(async (req, res) => {
         assert(req.query.map, 400, "Missing 'map' parameter.");
         const config = await loadConfig(req.query.map as string);
         
