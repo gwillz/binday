@@ -6,6 +6,7 @@ import express, { Response, Request, NextFunction } from 'express';
 import morgan from 'morgan';
 import { renderer } from '@bikeshaving/crank/cjs/html';
 import { createElement } from '@bikeshaving/crank/cjs';
+import MarkdownIt from 'markdown-it';
 
 import { HttpError } from './HttpError';
 import { isMapConfig, getBinDay, getBinWeek } from '../common/utils';
@@ -19,9 +20,13 @@ const r = path.resolve.bind(null, __dirname);
 const PORT = +process.env.PORT! || 3000;
 const ROOT = r('..');
 
+const CONTENT_TYPE_HTML = 'text/html;charset=utf-8';
+const CONTENT_TYPE_JS = 'application/javascript;charset=utf-8';
+
 
 function main() {
     const app = express();
+    const md = new MarkdownIt();
 
     // Logging.
     app.use(morgan('combined'));
@@ -38,7 +43,7 @@ function main() {
         payload += ';window.__config=' + JSON.stringify(config) + ';';
         payload += await readFileAsync(r(ROOT, 'public/widget.js'), 'utf-8');
 
-        res.header('content-type', 'application/javascript;charset=utf-8');
+        res.header('content-type', CONTENT_TYPE_JS);
         res.send(payload);
     }));
     
@@ -51,7 +56,7 @@ function main() {
         payload += ';window.__config=' + JSON.stringify(config) + ';';
         payload += await readFileAsync(r(ROOT, 'public/lib.js'), 'utf-8');
 
-        res.header('content-type', 'application/javascript;charset=utf-8');
+        res.header('content-type', CONTENT_TYPE_JS);
         res.send(payload);
     }));
     
@@ -95,12 +100,25 @@ function main() {
             bin_week,
         }));
         
-        res.header('content-type', 'text/html;charset=utf-8');
+        res.header('content-type', CONTENT_TYPE_HTML);
         res.send(body);
     }));
     
     app.use('/examples', express.static(r(ROOT, 'examples')));
-    // app.get('/', (req, res) => res.sendFile(r(ROOT, 'README.md')));
+    
+    app.get('/', a(async (req, res) => {
+        const [markdown, index] = await Promise.all([
+            readFileAsync(r(ROOT, 'README.md'), 'utf-8'),
+            readFileAsync(r(ROOT, 'src/index.hbs'), 'utf-8'),
+        ]);
+        
+        const content = md.render(markdown);
+        const data: Record<string, any> = { content };
+        const body = index.replace(/\{\{\{(\w+)\}\}\}/g, (m, name) => data[name]);
+        
+        res.header('content-type', CONTENT_TYPE_HTML);
+        res.send(body);
+    }));
     
     // Error handling.
     app.use((error: any, req: Request, res: Response, next: NextFunction) => {

@@ -18,6 +18,7 @@ and [Crank](//crank.js.org).
 - Express.js
 - Turf.js
 - date-fns
+- markdown-it
 
 
 ## Usage
