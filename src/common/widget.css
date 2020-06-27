@@ -3,41 +3,47 @@
     box-sizing: border-box;
     color: #333;
     display: inline-block;
-    font-size: 16px;
+    font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-weight: 400;
     position: relative;
-    padding-right: 1px;
+    padding-right: 0.1em;
+}
+
+.widget :global(*) {
+    box-sizing: inherit;
 }
 
 .day {
-    align-items: center;
-    border: 1px solid #000;
+    align-items: flex-end;
+    border: 0.1em solid #000;
     display: inline-flex;
-    justify-content: center;
-    margin-right: -1px;
+    justify-content: right;
+    padding: 0.2em;
     position: relative;
-    height: 30px;
-    width: 30px;
+    height: 3.4em;
+    width: 3.4em;
     vertical-align: top;
+}
+
+.day:not(:last-child) {
+    border-right: none;
 }
 
 .day .label {
     top: 0;
     left: 0;
-    font-size: 10px;
+    font-size: 1em;
     line-height: 1;
-    padding: 1px;
+    padding: 0.1em;
     position: absolute;
     text-transform: capitalize;
 }
 
 .day .icon {
     position: relative;
-    height: 20px;
-    max-width: 20px;
-    margin-bottom: -5px;
-    margin-right: -10px;
+    max-height: 1.4em;
+    width: 1em;
 }
 
 .day .icon svg {
@@ -52,9 +58,9 @@
     background: repeating-linear-gradient(
         45deg,
         #00ff95,
-        #00ff95 5px,
-        #b4ffbe 5px,
-        #b4ffbe 10px
+        #00ff95 .3em,
+        #b4ffbe .3em,
+        #b4ffbe .6em
     );
 }
 
@@ -65,9 +71,9 @@
     background: repeating-linear-gradient(
         45deg,
         #ffff4f,
-        #ffff4f 5px,
-        #ffffaa 5px,
-        #ffffaa 10px
+        #ffff4f .3em,
+        #ffffaa .3em,
+        #ffffaa .6em
     );
 }
 
@@ -78,9 +84,9 @@
     background: repeating-linear-gradient(
         45deg,
         #df3d3d,
-        #df3d3d 5px,
-        #a52b2b 5px,
-        #a52b2b 10px
+        #df3d3d .3em,
+        #a52b2b .3em,
+        #a52b2b .6em
     );
 }
 
@@ -91,8 +97,8 @@
     background: repeating-linear-gradient(
         45deg,
         #606dbc,
-        #606dbc 5px,
-        #465298 5px,
-        #465298 10px
+        #606dbc .3em,
+        #465298 .3em,
+        #465298 .6em
     );
 }
