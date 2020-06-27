@@ -4,7 +4,7 @@ import { createElement } from '@bikeshaving/crank/cjs';
 import { renderer } from '@bikeshaving/crank/cjs/html';
 import { a, assert, loadConfig } from './utils';
 import { CONTENT_TYPE_HTML } from '../common/config';
-import { getBinDay, getBinWeek, getEditLink } from '../common/bins';
+import { getBins, getEditLink } from '../common/bins';
 import { Widget } from '../common/Widget';
 
 
@@ -25,12 +25,8 @@ export function WidgetController() {
             longitude: +req.query.lng,
         }
         
-        const bin_day = getBinDay(config.map, coords) ?? "unavailable";
-        const bin_week = getBinWeek(config.bin_pattern);
-        
         const body = await renderer.render(createElement(Widget, {
-            bin_day,
-            bin_week,
+            bins: getBins(config, coords)
             // TODO edit_link
         }));
         

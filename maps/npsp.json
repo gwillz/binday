@@ -1,8 +1,8 @@
 {
-    "bin_pattern": [
-        "yellow",
-        "green"
-    ],
+    "patterns": {
+        "bin.trash": [ "red" ],
+        "bin.recycle": [ "yellow", "green" ]
+    },
     "map": {
         "type": "FeatureCollection",
         "features": [
@@ -14,7 +14,8 @@
                     "stroke-opacity": 1,
                     "fill": "#5fad6b",
                     "fill-opacity": 0.5,
-                    "weekday": "monday"
+                    "bin.trash": "monday",
+                    "bin.recycle": "monday"
                 },
                 "geometry": {
                     "type": "Polygon",
@@ -124,7 +125,8 @@
                     "stroke-opacity": 1,
                     "fill": "#58b5a8",
                     "fill-opacity": 0.5,
-                    "weekday": "thursday"
+                    "bin.trash": "thursday",
+                    "bin.recycle": "thursday"
                 },
                 "geometry": {
                     "type": "Polygon",
@@ -198,7 +200,8 @@
                     "stroke-opacity": 1,
                     "fill": "#ce6da1",
                     "fill-opacity": 0.5,
-                    "weekday": "tuesday"
+                    "bin.trash": "tuesday",
+                    "bin.recycle": "tuesday"
                 },
                 "geometry": {
                     "type": "Polygon",
@@ -288,7 +291,8 @@
                     "stroke-opacity": 1,
                     "fill": "#faa61a",
                     "fill-opacity": 0.5,
-                    "weekday": "wednesday"
+                    "bin.trash": "wednesday",
+                    "bin.recycle": "wednesday"
                 },
                 "geometry": {
                     "type": "Polygon",
@@ -370,7 +374,8 @@
                     "stroke-opacity": 1,
                     "fill": "#b69578",
                     "fill-opacity": 0.5,
-                    "weekday": "friday"
+                    "bin.trash": "friday",
+                    "bin.recycle": "friday"
                 },
                 "geometry": {
                     "type": "Polygon",

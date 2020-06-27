@@ -9,7 +9,7 @@ import { GEOJSON_IO_URL } from './config';
 export interface MapConfig {
     target: string;
     edit_link?: string;
-    bin_pattern: string[];
+    patterns: Record<string, string[]>;
     map: FeatureCollection;
 }
 
@@ -19,26 +19,35 @@ export interface LatLng {
     longitude: number;
 }
 
-
-export function getBinWeek(bin_pattern: string[]): string {
+export function getBins(config: MapConfig, coords: LatLng): Record<string, string[]> {
     const weeks = getWeek(new Date());
-    return bin_pattern[(weeks - 1) % bin_pattern.length];
-}
-
-
-export function getBinDay(map: FeatureCollection, coords: LatLng): string | undefined {
+    
+    if (!isFeatureCollection(config.map)) return {};
+    
     const position = point([coords.longitude, coords.latitude]);
+    
+    const polygon = config.map.features.find(feature => (
+        isPolygonType(feature.geometry) &&
+        pointsWithinPolygon(position, feature.geometry).features.length > 0
+    ));
 
-    if (isFeatureCollection(map)) {
-        const polygon = map.features.find(feature => (
-            isPolygonType(feature.geometry) &&
-            pointsWithinPolygon(position, feature.geometry).features.length > 0
-        ));
-
-        return polygon?.properties?.weekday as string;
+    if (!polygon?.properties) return {};
+    
+    const bins: Record<string, string[]> = {};
+    
+    for (let [name, day] of Object.entries(polygon.properties)) {
+        if (typeof day !== 'string') continue;
+        if (!config.patterns[name]) continue;
+        
+        const pattern = config.patterns[name];
+        const color = pattern[(weeks - 1) % pattern.length];
+        
+        bins[day]
+            ? bins[day].push(color)
+            : bins[day] = [color];
     }
-
-    return undefined;
+    
+    return bins;
 }
 
 
@@ -57,7 +66,7 @@ export function getEditLink(hostname: string, name: string) {
 export function isMapConfig(test: any): test is MapConfig {
     return test &&
         typeof test.target === "string" &&
-        test.bin_pattern instanceof Array &&
+        !!test.patterns &&
         isFeatureCollection(test.map);
 }
 

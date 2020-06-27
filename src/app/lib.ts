@@ -1,37 +1,27 @@
 
-import { getBinDay, getBinWeek, isMapConfig, LatLng } from '../common/bins';
+import { getBins as _getBins, isMapConfig, LatLng } from '../common/bins';
 
 
 declare global {
     interface Window {
         __config?: unknown;
         Binday: {
-            getDay: typeof getDay;
-            getWeek: typeof getWeek;
+            getBins: typeof getBins;
         }
     }
 }
 
 
-function getWeek(): string | undefined {
+function getBins(coords: LatLng): Record<string, string[]> | undefined {
     if (!isMapConfig(window.__config)) {
         console.error("Binday: config not loaded.");
         return undefined;
     }
-    return getBinWeek(window.__config.bin_pattern);
-}
-
-
-function getDay(coords: LatLng): string | undefined {
-    if (!isMapConfig(window.__config)) {
-        console.error("Binday: config not loaded.");
-        return undefined;
-    }
-    return getBinDay(window.__config.map, coords);
+    
+    return _getBins(window.__config, coords);
 }
 
 
 window.Binday = {
-    getDay,
-    getWeek,
+    getBins,
 }

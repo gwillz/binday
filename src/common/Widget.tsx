@@ -13,15 +13,18 @@ const DAYS = [
     'sunday',
 ];
 
-function s(names: Record<string, any>) {
-    return Object.entries(names)
-        .map(([name, test]) => test ? name : '')
-        .join(' ')
+// function s(names: Record<string, any>) {
+//     return Object.entries(names)
+//         .map(([name, test]) => test ? name : '')
+//         .join(' ')
+// }
+
+function s(...names: string[]) {
+    return names.join(' ');
 }
 
 type WidgetProps = {
-    bin_week: string;
-    bin_day: string;
+    bins: Record<string, string[] | undefined>;
 }
 
 export function Widget(props: WidgetProps) {
@@ -29,36 +32,38 @@ export function Widget(props: WidgetProps) {
         <div class={style.widget}>
             <style>{css}</style>
             {DAYS.map(day => (
-                <Day crank-key={day}
-                    highlight={day === props.bin_day}
-                    color={props.bin_week}
+                <Day
+                    crank-key={day}
                     title={day}
+                    colors={props.bins[day]}
                 />
             ))}
         </div>
     )
 }
 
+interface DayStat {
+    name: string; // trash, recycling
+    colors: string[]; // red, yellow, green
+    day: string; // monday, tuesday, wednesday
+}
+
 type DayProps = {
-    highlight: boolean;
-    color: string;
     title: string;
+    colors?: string[];
 }
 
 function Day(props: DayProps) {
     return (
-        <div class={s({
-            [style.day]: true,
-            [props.color]: props.highlight,
-        })}>
+        <div class={style.day}>
             <span class={style.label}>
                 {props.title.slice(0, 2)}
             </span>
-            {props.highlight && (
-                <div class={style.icon}>
+            {props.colors?.map(color => (
+                <div class={s(style.icon, color)}>
                     <Raw value={bin} />
                 </div>
-            )}
+            ))}
         </div>
     )
 }

@@ -51,10 +51,10 @@
     max-width: 100%;
 }
 
-.day:global(.green) svg {
+.day .icon:global(.green) svg {
     fill: #0faf0f;
 }
-.day:global(.green) {
+/* .day:global(.green) {
     background: repeating-linear-gradient(
         45deg,
         #00ff95,
@@ -62,12 +62,12 @@
         #b4ffbe .3em,
         #b4ffbe .6em
     );
-}
+} */
 
-.day:global(.yellow) svg {
+.day .icon:global(.yellow) svg {
     fill: #d3d30f;
 }
-.day:global(.yellow) {
+/* .day:global(.yellow) {
     background: repeating-linear-gradient(
         45deg,
         #ffff4f,
@@ -75,12 +75,12 @@
         #ffffaa .3em,
         #ffffaa .6em
     );
-}
+} */
 
-.day:global(.red) svg {
+.day .icon:global(.red) svg {
     fill: red;
 }
-.day:global(.red) {
+/* .day:global(.red) {
     background: repeating-linear-gradient(
         45deg,
         #df3d3d,
@@ -88,12 +88,12 @@
         #a52b2b .3em,
         #a52b2b .6em
     );
-}
+} */
 
-.day:global(.blue) svg {
+.day .icon:global(.blue) svg {
     fill: #3232ff;
 }
-.day:global(.blue) {
+/* .day:global(.blue) {
     background: repeating-linear-gradient(
         45deg,
         #606dbc,
@@ -101,4 +101,4 @@
         #465298 .3em,
         #465298 .6em
     );
-}
+} */

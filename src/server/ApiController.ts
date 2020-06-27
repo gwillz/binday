@@ -3,7 +3,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { HttpError } from './HttpError';
 import { a, loadConfig, assert, readdirAsync, r } from './utils';
 import { CONTENT_TYPE_GEOJSON } from '../common/config';
-import { getBinWeek, getBinDay, getEditLink } from '../common/bins';
+import { getBins, getEditLink } from '../common/bins';
 
 
 export function ApiController() {
@@ -23,8 +23,7 @@ export function ApiController() {
         }
         
         res.send({
-            bin_day: getBinDay(config.map, coords),
-            bin_week: getBinWeek(config.bin_pattern),
+            bins: getBins(config, coords),
             edit_link: config.edit_link,
         });
     }));
