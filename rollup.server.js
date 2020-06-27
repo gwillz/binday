@@ -1,4 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
+import inlineSvg from 'rollup-plugin-inline-svg';
 
 /** @type {import('rollup').RollupOptions} */
 export default {
@@ -11,6 +12,10 @@ export default {
     plugins: [
         typescript({
             tsconfig: './tsconfig.server.json',
+        }),
+        inlineSvg(),
+        styles({
+            mode: 'extract',
         }),
     ],
 }

@@ -35,6 +35,8 @@
     "@types/markdown-it": "^10.0.1",
     "@types/morgan": "^1.9.1",
     "rollup": "^2.18.0",
+    "rollup-plugin-inline-svg": "^1.1.1",
+    "rollup-plugin-styles": "^3.10.0",
     "rollup-plugin-terser": "^6.1.0",
     "typescript": "^3.9.5"
   }
