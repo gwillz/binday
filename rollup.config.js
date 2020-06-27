@@ -31,16 +31,47 @@ const output = {
     sourcemap: false,
 }
 
+const watch = {
+    clearScreen: false,
+};
+
 /** @type {import('rollup').RollupOptions} */
 export default [
     {
         input: './src/app/widget.tsx',
+        watch,
         output,
         plugins,
     },
     {
         input: './src/app/lib.ts',
+        watch,
         output,
         plugins,
+    },
+    {
+        input: './src/server/index.ts',
+        output: {
+            dir: './dist/',
+            format: 'commonjs',
+            sourcemap: true,
+        },
+        watch,
+        // Yes, I should use resolve/commonjs/builtin-modules but I can't
+        // quite figure them out yet.
+        external: [
+            'path', 'util', 'fs',
+            'express', 'morgan', 'compression', 'cors',
+            'markdown-it', 'date-fns', /@bikeshaving/, /@turf/,
+        ],
+        plugins: [
+            typescript({
+                tsconfig: './tsconfig.server.json',
+            }),
+            inlineSvg(),
+            styles({
+                mode: 'extract',
+            }),
+        ],
     },
 ];
