@@ -9,6 +9,8 @@ export async function* App(this: Context, props: MapConfig) {
     let bin_week = getBinWeek(props.bin_pattern);
     let bin_day = "...";
     
+    yield <Widget {...{bin_week, bin_day}} />
+    
     for await (props of this) {
         try {
             const geo = await getGeo({ enableHighAccuracy: true });
