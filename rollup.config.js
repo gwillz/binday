@@ -5,13 +5,13 @@ import inlineSvg from 'rollup-plugin-inline-svg';
 import styles from 'rollup-plugin-styles';
 
 const plugins = [
-    resolve({
-        browser: false,
-    }),
     styles({
         mode: 'extract',
         modules: true,
         dts: true,
+    }),
+    resolve({
+        browser: false,
     }),
     typescript({
         tsconfig: './tsconfig.client.json',
@@ -65,12 +65,18 @@ export default [
             'markdown-it', 'date-fns', /@bikeshaving/, /@turf/,
         ],
         plugins: [
+            styles({
+                mode: 'extract',
+                modules: true,
+                dts: true,
+            }),
             typescript({
                 tsconfig: './tsconfig.server.json',
             }),
-            inlineSvg(),
-            styles({
-                mode: 'extract',
+            inlineSvg({
+                removeTags: true,
+                removingTags: ['title', 'desc', 'defs', 'style', 'metadata'],
+                removeSVGTagAttrs: true,
             }),
         ],
     },
