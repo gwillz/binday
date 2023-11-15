@@ -1,111 +1,59 @@
 
 # My Bin Day
 
-Yet another utility for discovering your bin day.
-Heavily over-engineered - but it was fun.
+A heavily over-engineered utility for discovering your bin day.
 
-Mostly, it was a chance to discover some tech I haven't used before.
-In particular,
-[Rollup](//rollupjs.org),
-[Turf](//turfjs.org),
-and [Crank](//crank.js.org).
+This is build with Typescript + Crank.js. It's funky and fun.
 
 
-## Tech
-- Typescript
-- Rollup.js
-- Crank.js
-- Express.js
-- Turf.js
-- date-fns
-- markdown-it
+## Abstract
+
+Bin days aren't really that hard. This week it was green, last week was yellow. Wait. Or was it? I already forgot. The kid across the street always puts out the yellow bin which just throws everyone off.
+
+Fine - so this exists now.
+
+Councils will also divide up their territory and _move_ the bin day for different sub-suburbs. So this widget is two things - a configuration of bin patterns and a designation of which day for which location.
+
+
+## Demo
+
+The demo site here shows my own council bin. It won't mean much to you if you're not actually here. Spoof your geolocation if you can and maybe it'll make more sense.
+
+https://gwillz.github.io/binday
 
 
 ## Usage
 
-There are 4 ways to use this library.
+This used to be far more complicated, now it's just a widget. You can render this into your own site and do whatever you like with it.
 
+```html
+<!-- Load the JS widget lib. -->
+<script src="https://gwillz.github.io/binday/index.js"></script>
 
-### Crank Widget
+<!-- Create widgets wherever you like. -->
+<div data-binday="path/to/config.json"></div>
 
-Example: [Crank Widget](https://my-bin-day.herokuapp.com/examples/widget.html)
-
-Endpoint: `/js/widget.js?map=...&target=...`
-
-- `map` the config name
-- `target` the DOM element ID
-
-This renders a widget into your page which then prompts for your GPS location.
-
-
-### JS Library
-
-Example: [Library](https://my-bin-day.herokuapp.com/examples/lib.html)
-
-Endpoint: `/js/lib.js?map=...`
-
-- `map` the config name
-
-This imports a globally library `Binday` which exposes the methods
-for retrieving your bin day/week.
-
-- `Binday.getWeek()` which recycling week is it?
-- `Binday.getDay({ latitude, longitude})` what day is my bin collection?
-
-
-### Static Widget
-
-Example: [Static Widget](https://my-bin-day.herokuapp.com/examples/static.html)
-
-Endpoint: `/widget?map=...&lat=...&lng=...`
-
-- `map` the config name
-- `lat` your latitude
-- `lng` your longitude
-
-This returns a JS-free HTML copy of the widget.
-
-
-### REST API
-
-Example: [API](https://my-bin-day.herokuapp.com/examples/api.html)
-
-Endpoint: `/api/bins?map=...&lat=...&lng=...`
-
-- `map` the config name
-- `lat` your latitude
-- `lng` your longitude
-
-This returns a JSON body of your bin collection data.
-
-```json
-{
-    "bin_day": "wednesday",
-    "bin_week": "green"
-}
+<!-- (Optional) If not rending on load, trigger them manually. -->
+<script>__binday__.render();</script>
 ```
 
-#### Additional API endpoints
 
-- `/api/maps`
-    To list all configs provided and a link view their map on [geojson.io](//geojson.io).
-- `/api/geojson?map=...`
-    Returns the geojson component.
-
-
-## Creating new maps
+## Configurations
 
 This is a config file.
 
 ```json
 {
-    "bin_pattern": ["yellow", "green"],
+    "patterns": {
+        "bin.trash": ["red"],
+        "bin.recycle": ["yellow", "green"]
+    },
     "map": { "type": "FeatureCollection", "features": [...] }
 }
 ```
 
 
-### Config `bin_pattern`
+### Config `patterns`
 
 The pattern of bins from week 1 of the current year.
 
@@ -123,18 +71,25 @@ i.e. `['yellow', 'green', 'blue']` should produce:
 
 A GeoJSON object in WGS84 coordinates.
 
-This is a simple FeatureCollection with just Polygon or MultiPolygon
-children. Most importantly, these should contain a property called `weekday`
-that contains whichever day applies to that zone.
+This is a simple FeatureCollection with just Polygon or MultiPolygon children. Most importantly, these should contain properties that match the `patterns` config that contains whichever day applies to that zone + pattern.
+
+For example, this only include show alternating yellow/green on Mondays.
+
+```json
+{
+    "patterns": {
+        "bin.recycle": ["yellow", "green"]
+    },
+    "map": {
+        "type": "FeatureCollection", "features": [{
+            "type": "Feature",
+            "properties": {
+                "bin.recycle": "monday",
+            }
+        }]
+    }
+}
+```
 
 Use [geojson.io](geojson.io) to create your own.
 
-
-## Authors
-
-- [Me](//gwilyn.com)
-
-
-## License
-
-MIT
