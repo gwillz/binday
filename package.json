@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "tsc": "tsc --noEmit",
-    "build": "vite build"
+    "build": "vite build",
+    "deploy": "bash deploy.sh"
   },
   "author": "Gwilyn Saunders",
   "license": "MIT",
