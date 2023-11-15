@@ -1,0 +1,35 @@
+
+table.calendar {
+    background-color: #fff;
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: table;
+    line-height: 1;
+    table-layout: fixed;
+    user-select: none;
+}
+
+table.calendar th {
+    padding: 10px 5px;
+}
+
+table.calendar td {
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+td.today {
+    font-weight: bold;
+}
+
+td.weekend {
+    font-style: italic;
+}
+
+td.time-travel {
+    color: rgba(0,0,0, 0.5);
+}
+
+td.off {
+    color: rgba(0,0,0, 0.15);
+}
