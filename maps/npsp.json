@@ -1,7 +1,7 @@
 {
     "patterns": {
-        "bin.trash": [ "red" ],
-        "bin.recycle": [ "yellow", "green" ]
+        "bin.trash": [ "indianred" ],
+        "bin.recycle": [ "yellow", "limegreen" ]
     },
     "map": {
         "type": "FeatureCollection",
