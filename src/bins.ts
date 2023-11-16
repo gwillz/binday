@@ -1,5 +1,5 @@
 
-import { GeoJsonObject, FeatureCollection, MultiPolygon, Polygon, Geometry } from 'geojson';
+import { GeoJsonObject, FeatureCollection, MultiPolygon, Polygon, Geometry, Feature } from 'geojson';
 import { add, getWeek } from 'date-fns';
 import { point } from '@turf/helpers';
 import pointsWithinPolygon from '@turf/points-within-polygon';
@@ -15,7 +15,7 @@ export const DAYS = [
 ] as const;
 
 
-export interface MapConfig {
+export interface BinConfig {
     patterns: Record<string, string[]>;
     map: FeatureCollection;
 }
@@ -30,85 +30,111 @@ export interface LatLng {
 export type WeekDays = typeof DAYS[number];
 
 
-export type MapBins = {
+export type BinWeek = {
     [key in WeekDays]?: string[];
 }
 
-type Props = {
-    config: MapConfig;
+
+export class Bins {
+
+    config: BinConfig;
     coords: LatLng;
-    date: Date;
-}
 
-export function getBinWeek(props: Props): MapBins {
-    const { config, coords, date } = props;
+    #feature?: Feature<Polygon | MultiPolygon>;
 
-    // // test data.
-    // return {
-    //     wednesday: ['red', 'green'],
-    //     monday: ['blue'],
-    // }
+    constructor(config: BinConfig, coords: LatLng) {
+        this.config = config;
+        this.coords = coords;
 
-    const weeks = getWeek(date);
-
-    // Can't do anything here.
-    if (!isFeatureCollection(config.map)) {
-        console.warn('Not a feature collection:', config.map);
-        return {};
+        this.#feature = this.#parse();
     }
 
-    const position = point([coords.longitude, coords.latitude]);
-
-    const polygon = config.map.features.find(feature => (
-        isPolygonType(feature.geometry) &&
-        pointsWithinPolygon(position, feature.geometry).features.length > 0
-    ));
-
-    // This is ok?
-    // Just means the coordinates are out-of-bounds.
-    if (!polygon) {
-        return {};
-    }
-
-    // This means the feature isn't configured with any bin properties.
-    // Which is unlikely, renderers tend to use this to store stroke/fill/colour.
-    if (!polygon.properties) {
-        console.warn('Found a feature but no properties:', polygon);
-        return {};
-    }
-
-    const bins: MapBins = {};
-
-    for (let [name, day] of Object.entries(polygon.properties)) {
-        if (typeof day !== 'string') continue;
-        if (!config.patterns[name]) continue;
-
-        const pattern = config.patterns[name];
-        const color = pattern[(weeks - 1) % pattern.length];
-
-        day = day.toLowerCase().trim();
-
-        if (!isDay(day)) {
-            console.warn('invalid day:', day);
-            continue;
+    #parse() {
+        // Can't do anything here.
+        if (!isFeatureCollection(this.config.map)) {
+            console.warn('Not a feature collection:', this.config.map);
+            return undefined;
         }
 
-        bins[day]
-            ? bins[day]!.push(color)
-            : bins[day] = [color];
+        const position = point([this.coords.longitude, this.coords.latitude]);
+
+        const polygon = this.config.map.features.find(feature => (
+            isPolygonFeature(feature) &&
+            pointsWithinPolygon(position, feature).features.length > 0
+        ));
+
+        if (!polygon) {
+            return undefined;
+        }
+
+        if (!polygon.properties) {
+            console.warn('Found a feature but no properties');
+        }
+
+        return polygon as Feature<Polygon | MultiPolygon>;
     }
 
-    return bins;
-}
+    updateCoordinates(coords: LatLng) {
+        this.coords = coords;
+    }
 
+    getWeek(date: Date): BinWeek {
+        const bins: BinWeek = {};
 
-export function getBinDay(props: Props): string[] {
-    const { date } = props;
+        if (!this.#feature || !this.#feature.properties) {
+            return bins;
+        }
 
-    const day = DAYS[date.getDay()];
-    const week = getBinWeek(props);
+        const weeks = getWeek(date);
 
-    return week[day] ?? [];
+        for (let [name, day] of Object.entries(this.#feature.properties)) {
+            if (typeof day !== 'string') continue;
+            if (!this.config.patterns[name]) continue;
+
+            const pattern = this.config.patterns[name];
+            const color = pattern[(weeks - 1) % pattern.length];
+
+            day = day.toLowerCase().trim();
+
+            if (!isDay(day)) {
+                console.warn('invalid day:', day);
+                continue;
+            }
+
+            bins[day]
+                ? bins[day]!.push(color)
+                : bins[day] = [color];
+        }
+
+        return bins;
+    }
+
+    getColors(date: Date): string[] {
+        const day = DAYS[date.getDay()];
+        const week = this.getWeek(date);
+
+        return week[day] ?? [];
+    }
+
+    getNextDate(date: Date): Date | null {
+        const week = this.getWeek(date);
+        const day = DAYS[date.getDay()];
+
+        if (week[day]) {
+            return date;
+        }
+
+        for (let i = 1; i < 7; i++) {
+            const next = add(date, { days: i });
+            const nextDay = DAYS[next.getDay()];
+
+            if (week[nextDay]) {
+                return next;
+            }
+        }
+
+        return null;
+    }
 }
 
 
@@ -124,7 +150,7 @@ export function getEditLink(hostname: string, name: string) {
 }
 
 
-export function isMapConfig(test: any): test is MapConfig {
+export function isMapConfig(test: any): test is BinConfig {
     return test &&
         !!test.patterns &&
         isFeatureCollection(test.map);
@@ -136,10 +162,20 @@ export function isFeatureCollection(test?: GeoJsonObject | null): test is Featur
 }
 
 
-export function isPolygonType(test?: Geometry | null): test is Polygon | MultiPolygon {
+export function isPolygonType(test: any): test is Polygon | MultiPolygon {
     return !!test && (
         test.type === "Polygon" ||
         test.type === "MultiPolygon"
+    );
+}
+
+
+export function isPolygonFeature(test?: any): test is Feature<Polygon | MultiPolygon> {
+    return (
+        !!test &&
+        typeof test === "object" &&
+        test.type === "Feature" &&
+        isPolygonType(test.geometry)
     );
 }
 

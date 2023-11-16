@@ -1,6 +1,6 @@
 
 import { Context, createElement } from '@b9g/crank';
-import { MapBins, MapConfig, getBinWeek, isMapConfig } from './bins';
+import { BinWeek, BinConfig, getBinWeek, isMapConfig } from './bins';
 import { Widget } from './Widget';
 import { getGeo } from './dom';
 
@@ -9,7 +9,7 @@ type Props = {
 }
 
 export async function* App(this: Context<Props>, props: Props) {
-    let config: MapConfig | undefined = undefined;
+    let config: BinConfig | undefined = undefined;
     let geo: GeolocationCoordinates | undefined = undefined;
 
     for await (props of this) {
