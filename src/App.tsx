@@ -1,6 +1,6 @@
 
 import { Context, createElement } from '@b9g/crank';
-import { MapBins, MapConfig, getBins, isMapConfig } from './bins';
+import { MapBins, MapConfig, getBinWeek, isMapConfig } from './bins';
 import { Widget } from './Widget';
 import { getGeo } from './dom';
 
@@ -9,12 +9,11 @@ type Props = {
 }
 
 export async function* App(this: Context<Props>, props: Props) {
-    let config: MapConfig | null = null;
-    let bins: MapBins = {};
+    let config: MapConfig | undefined = undefined;
     let geo: GeolocationCoordinates | undefined = undefined;
 
     for await (props of this) {
-        yield <Widget bins={bins} />
+        yield <Widget config={config} />
 
         const res = await fetch(props.url, { mode: 'cors' });
 
@@ -22,7 +21,7 @@ export async function* App(this: Context<Props>, props: Props) {
 
         if (!isMapConfig(config)) {
             console.warn('invalid map config:', props.url);
-            config = null;
+            config = undefined;
         }
 
         try {
@@ -32,10 +31,6 @@ export async function* App(this: Context<Props>, props: Props) {
             console.error(error);
         }
 
-        if (config && geo) {
-            bins = getBins(config, geo);
-        }
-
-        yield <Widget bins={bins} coordinates={geo} />
+        yield <Widget config={config} coordinates={geo} />
     }
 }

@@ -34,8 +34,14 @@ export type MapBins = {
     [key in WeekDays]?: string[];
 }
 
+type Props = {
+    config: MapConfig;
+    coords: LatLng;
+    date: Date;
+}
 
-export function getBins(config: MapConfig, coords: LatLng): MapBins {
+export function getBinWeek(props: Props): MapBins {
+    const { config, coords, date } = props;
 
     // // test data.
     // return {
@@ -43,7 +49,7 @@ export function getBins(config: MapConfig, coords: LatLng): MapBins {
     //     monday: ['blue'],
     // }
 
-    const weeks = getWeek(new Date());
+    const weeks = getWeek(date);
 
     // Can't do anything here.
     if (!isFeatureCollection(config.map)) {
@@ -93,6 +99,16 @@ export function getBins(config: MapConfig, coords: LatLng): MapBins {
     }
 
     return bins;
+}
+
+
+export function getBinDay(props: Props): string[] {
+    const { date } = props;
+
+    const day = DAYS[date.getDay()];
+    const week = getBinWeek(props);
+
+    return week[day] ?? [];
 }
 
 

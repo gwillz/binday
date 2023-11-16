@@ -1,19 +1,28 @@
 
-import { createElement, Raw } from '@b9g/crank';
+import { createElement } from '@b9g/crank';
 import style from './widget.module.css';
-import { MapBins, DAYS, LatLng } from './bins';
+import { MapBins, DAYS, LatLng, MapConfig, getBinDay } from './bins';
 import { Calendar } from './Calendar';
 
 
 type Props = {
-    bins: MapBins;
+    config?: MapConfig;
     coordinates?: LatLng;
 }
 
 export function Widget(props: Props) {
     const today = new Date();
 
-    const hasData = Object.values(props.bins).some(bins => bins.length > 0);
+    const getColors = (date: Date) => {
+        if (!props.coordinates) return [];
+        if (!props.config) return [];
+
+        return getBinDay({
+            config: props.config,
+            coords: props.coordinates,
+            date: date,
+        });
+    }
 
     return (
         <div class={style.widget}>
@@ -22,7 +31,7 @@ export function Widget(props: Props) {
                     <div class={style.day}>
                         <div class={style.label}>{date.getDate()}</div>
                         <div class={style.icons}>
-                            {(props.bins[DAYS[date.getDay()]] ?? []).map(color => (
+                            {getColors(date).map(color => (
                                 <div
                                     crank-key={color}
                                     class={style.icon}
@@ -37,7 +46,7 @@ export function Widget(props: Props) {
                 {
                     !props.coordinates ? (
                         <p>Acquiring location...</p>
-                    ) : !hasData ? (
+                    ) : !props.config ? (
                         <p>Sorry, no bin data for your location.</p>
                     ) : null
                 }
