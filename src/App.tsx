@@ -1,6 +1,6 @@
 
 import { Context, createElement } from '@b9g/crank';
-import { BinWeek, BinConfig, getBinWeek, isMapConfig } from './bins';
+import { BinConfig, isMapConfig } from './bins';
 import { Widget } from './Widget';
 import { getGeo } from './dom';
 
